@@ -13,8 +13,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-import static org.hamcrest.Matchers.hasSize;
+
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
 
@@ -58,5 +59,24 @@ class CustomerServiceTest {
 
         assertEquals(FIRST_NAME,customerDTO.getFirstname());
         assertEquals(LAST_NAME,customerDTO.getLastname());
+    }
+    @Test
+    void createNewCustomer() throws Exception{
+        //given
+        CustomerDTO customerDTO = new CustomerDTO();
+        customerDTO.setFirstname(FIRST_NAME);
+        customerDTO.setLastname(LAST_NAME);
+        Customer savedCustomer = new Customer();
+        savedCustomer.setFirstName(customerDTO.getFirstname());
+        savedCustomer.setLastName(customerDTO.getLastname());
+        savedCustomer.setId(ID);
+        when(customerRepository.save(any(Customer.class))).thenReturn(savedCustomer);
+        //when
+        CustomerDTO savedDto = customerService.createNewCustomer(customerDTO);
+
+        //then
+        assertEquals(customerDTO.getFirstname(),savedDto.getFirstname());
+        assertEquals("/api/v1/customer/1",savedDto.getCustomerUrl());
+
     }
 }
