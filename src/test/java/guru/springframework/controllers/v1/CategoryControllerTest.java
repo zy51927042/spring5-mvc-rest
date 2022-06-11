@@ -2,7 +2,9 @@ package guru.springframework.controllers.v1;
 
 import guru.springframework.api.v1.model.CategoryDTO;
 import guru.springframework.api.v1.model.CategoryListDTO;
+import guru.springframework.controllers.RestResponseEntityExceptionHandler;
 import guru.springframework.services.CategoryService;
+import guru.springframework.exceptions.ResourceNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -18,7 +20,6 @@ import java.util.List;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -43,6 +44,7 @@ class CategoryControllerTest {
         MockitoAnnotations.openMocks(this);
         mockMvc = MockMvcBuilders
                 .standaloneSetup(controller)
+                .setControllerAdvice(new RestResponseEntityExceptionHandler())
                 .build();
     }
 
@@ -76,5 +78,13 @@ class CategoryControllerTest {
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name",equalTo(NAME)));
+    }
+    @Test
+    void getByNameNotFound() throws Exception {
+        when(categoryService.getCategoryByName(anyString())).thenThrow(ResourceNotFoundException.class);
+
+        mockMvc.perform(MockMvcRequestBuilders.get(CATEGORY_URI + "/Foo")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
     }
 }
