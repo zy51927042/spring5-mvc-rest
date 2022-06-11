@@ -1,12 +1,12 @@
 package guru.springframework.controllers.v1;
 
+import guru.springframework.api.v1.model.CustomerDTO;
+import guru.springframework.api.v1.model.VendorDTO;
 import guru.springframework.domain.VendorPagedList;
 import guru.springframework.services.VendorService;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping(VendorController.BASE_URL)
@@ -22,6 +22,7 @@ public class VendorController {
         this.vendorService = vendorService;
     }
     @GetMapping
+    @ResponseStatus(HttpStatus.OK)
     public VendorPagedList getAllVendors(@RequestParam(value = "pageNumber", required = false) Integer pageNumber,
                                          @RequestParam(value = "pageSize", required = false) Integer pageSize){
         if (pageNumber == null || pageNumber < 0){
@@ -34,4 +35,27 @@ public class VendorController {
         return vendorService.getAllVendorsByPage(PageRequest.of(pageNumber,pageSize));
 
     }
+
+    @GetMapping("/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public VendorDTO getVendorById(@PathVariable Long id) {
+        return vendorService.getVendorById(id);
+    }
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    public VendorDTO createNewVendor(@RequestBody VendorDTO vendorDTO) {
+        return vendorService.createNewVendor(vendorDTO);
+    }
+    @PutMapping("/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public VendorDTO saveVendorById(@PathVariable Long id, @RequestBody VendorDTO vendorDTO){
+        return vendorService.saveVendorByDTO(id,vendorDTO);
+    }
+
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public void deleteVendor(@PathVariable Long id) {
+        vendorService.deleteVendorById(id);
+    }
+
 }

@@ -54,9 +54,9 @@ class CustomerControllerTest {
         //given
         List<CustomerDTO> customerDTOs = Arrays.asList(new CustomerDTO(),new CustomerDTO());
         CustomerListDTO customerListDTO = new CustomerListDTO(customerDTOs);
-        //when
+
         when(customerService.getAllCustomers()).thenReturn(customerDTOs);
-        //then
+        //when/then
         mockMvc.perform(MockMvcRequestBuilders.get(URI).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.customers",hasSize(2)));

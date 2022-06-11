@@ -9,7 +9,7 @@ import java.util.List;
 
 public class VendorPagedList extends PageImpl<VendorDTO> {
 
-    public VendorPagedList(@JsonProperty("vendors")List<VendorDTO> content,
+    public VendorPagedList(List<VendorDTO> content,
                            Pageable pageable,
                            long total) {
         super(content, pageable, total);
