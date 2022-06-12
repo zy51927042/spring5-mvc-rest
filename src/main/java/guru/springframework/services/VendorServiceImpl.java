@@ -2,6 +2,7 @@ package guru.springframework.services;
 
 import guru.springframework.api.v1.mapper.VendorMapper;
 import guru.springframework.api.v1.model.VendorDTO;
+import guru.springframework.controllers.v1.VendorController;
 import guru.springframework.domain.Vendor;
 import guru.springframework.domain.VendorPagedList;
 import guru.springframework.exceptions.ResourceNotFoundException;
@@ -30,7 +31,11 @@ public class VendorServiceImpl implements VendorService {
 
         return new VendorPagedList(vendorPage
                 .stream()
-                .map(mapper::vendorToVendorDTO)
+                .map(vendor -> {
+                    VendorDTO vendorDTO = mapper.vendorToVendorDTO(vendor);
+                    vendorDTO.setVendorUrl(VendorController.BASE_URL+"/"+vendor.getId());
+                    return vendorDTO;
+                })
                 .collect(Collectors.toList()),
                 PageRequest.of(vendorPage.getPageable().getPageNumber(),
                 vendorPage.getPageable().getPageSize()),
@@ -41,14 +46,22 @@ public class VendorServiceImpl implements VendorService {
     public List<VendorDTO> getAllVendors() {
         return vendorRepository.findAll()
                 .stream()
-                .map(mapper::vendorToVendorDTO)
+                .map(vendor -> {
+                    VendorDTO vendorDTO = mapper.vendorToVendorDTO(vendor);
+                    vendorDTO.setVendorUrl(VendorController.BASE_URL+"/"+vendor.getId());
+                    return vendorDTO;
+                })
                 .collect(Collectors.toList());
     }
 
     @Override
     public VendorDTO getVendorById(Long id) {
         return vendorRepository.findById(id)
-                .map(mapper::vendorToVendorDTO)
+                .map(vendor -> {
+                    VendorDTO vendorDTO = mapper.vendorToVendorDTO(vendor);
+                    vendorDTO.setVendorUrl(VendorController.BASE_URL+"/"+vendor.getId());
+                    return vendorDTO;
+                })
                 .orElseThrow(ResourceNotFoundException::new);
     }
 
