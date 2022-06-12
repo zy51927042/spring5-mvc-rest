@@ -14,8 +14,13 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.*;
 
 class VendorServiceTest {
@@ -47,7 +52,21 @@ class VendorServiceTest {
         //then
         assertEquals(vendorDTOS.size(),2);
     }
+    @Test
+    void getVendorByIdBDD() {
+        //mockito BDD syntax
+        Vendor vendor = getVendor1();
+        given(vendorRepository.findById(anyLong())).willReturn(Optional.of(vendor));
 
+        //when
+        VendorDTO vendorDTO = vendorService.getVendorById(1L);
+
+        //then
+        then(vendorRepository).should(times(1)).findById(anyLong());
+
+        //JUnit Assert that with matchers
+        assertThat(vendorDTO.getName(), is(equalTo(NAME)));
+    }
     @Test
     void getVendorById() {
         //given
@@ -103,4 +122,18 @@ class VendorServiceTest {
         vendorService.deleteVendorById(ID);
         verify(vendorRepository,times(1)).deleteById(anyLong());
     }
+    private Vendor getVendor1() {
+        Vendor vendor = new Vendor();
+        vendor.setName(NAME);
+        vendor.setId(ID);
+        return vendor;
+    }
+
+    private Vendor getVendor2() {
+        Vendor vendor = new Vendor();
+        vendor.setName(NAME);
+        vendor.setId(ID);
+        return vendor;
+    }
+
 }
